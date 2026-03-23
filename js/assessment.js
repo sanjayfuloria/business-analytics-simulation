@@ -3,7 +3,7 @@
 // ============================================================
 
 // >>> PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE <<<
-var GOOGLE_SCRIPT_URL = '';
+var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwt7KInvMYp5uXHoL1ml2MeiHf9mLNg3acKGvJYp9HsZrD3zOrJwg9j7Eeg7brwzzyoiw/exec';
 
 // ===== STUDENT PROFILE =====
 
