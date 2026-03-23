@@ -778,6 +778,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
@@ -797,6 +798,78 @@ body {
 
 .sandbox-output-content.error {
     color: var(--danger);
+}
+
+/* ===== Plot Output Styles ===== */
+.output-text {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: var(--text-primary);
+    background: transparent;
+}
+
+.output-plots {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.plot-wrapper {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: white;
+}
+
+[data-theme="dark"] .plot-wrapper {
+    background: #1a1a2e;
+    border-color: var(--border);
+}
+
+.plot-label {
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.plot-label i {
+    color: var(--accent);
+}
+
+.plot-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.15s;
+}
+
+.plot-image:hover {
+    opacity: 0.95;
+}
+
+.sandbox-output-content .output-text {
+    background: transparent;
+    border: none;
+    overflow: visible;
+}
+
+.sandbox-output-content .output-plots {
+    max-height: none;
+}
+
+.sandbox-output-content .plot-image {
+    max-width: 100%;
 }
 
 /* Sandbox Templates */
