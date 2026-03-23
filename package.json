@@ -1,0 +1,7 @@
+{
+  "name": "business-analytics-simulation",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx serve -l 3000 -s ."
+  }
+}

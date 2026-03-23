@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Analytics Simulation | MBA Program</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <i class="fas fa-chart-line"></i>
+            <span>Business Analytics Simulation</span>
+        </div>
+        <div class="nav-subtitle">MBA Program — Interactive Learning Platform</div>
+        <div class="nav-actions">
+            <button class="btn-profile" id="profileBtn" title="Student Profile">
+                <i class="fas fa-user"></i> Register
+            </button>
+            <button class="btn-theme" id="themeToggle" title="Toggle dark/light mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Topics</h3>
+            </div>
+            <ul class="sidebar-menu" id="sidebarMenu">
+                <li class="menu-item active" data-topic="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </li>
+                <li class="menu-section">Regression Analysis</li>
+                <li class="menu-item" data-topic="simple-regression">
+                    <i class="fas fa-chart-scatter"></i>
+                    <span>Simple Linear Regression</span>
+                </li>
+                <li class="menu-item" data-topic="multiple-regression">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Multiple Regression</span>
+                </li>
+                <li class="menu-item" data-topic="logistic-regression">
+                    <i class="fas fa-toggle-on"></i>
+                    <span>Logistic Regression</span>
+                </li>
+                <li class="menu-section">Multivariate Analysis</li>
+                <li class="menu-item" data-topic="factor-analysis">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Factor Analysis</span>
+                </li>
+                <li class="menu-item" data-topic="cluster-analysis">
+                    <i class="fas fa-object-group"></i>
+                    <span>Cluster Analysis</span>
+                </li>
+                <li class="menu-section">Tools</li>
+                <li class="menu-item" data-topic="sandbox">
+                    <i class="fas fa-code"></i>
+                    <span>Code Sandbox</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Content loaded dynamically by app.js -->
+        </main>
+    </div>
+
+    <!-- Loading Overlay for Pyodide/webR -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner">
+            <i class="fas fa-cog fa-spin"></i>
+            <p id="loadingMessage">Loading runtime...</p>
+        </div>
+    </div>
+
+    <!-- Student Profile Modal -->
+    <div class="modal-overlay" id="profileModal" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-circle"></i> Student Registration</h3>
+                <button class="modal-close" id="profileModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Please enter your details. This information will be included with your assessment submissions.</p>
+                <div class="form-group">
+                    <label for="profileName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="profileName" placeholder="e.g., Rahul Sharma">
+                </div>
+                <div class="form-group">
+                    <label for="profileEmail">Email Address <span class="required">*</span></label>
+                    <input type="email" id="profileEmail" placeholder="e.g., rahul@university.edu">
+                </div>
+                <div class="form-group">
+                    <label for="profileRoll">Roll Number <span class="required">*</span></label>
+                    <input type="text" id="profileRoll" placeholder="e.g., MBA2024-042">
+                </div>
+                <div class="form-group">
+                    <label for="profileSection">Section <span class="required">*</span></label>
+                    <input type="text" id="profileSection" placeholder="e.g., Section A">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-save" id="profileModalSave"><i class="fas fa-save"></i> Save Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/content.js"></script>
+    <script src="js/assessment.js"></script>
+    <script src="js/sandbox.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
