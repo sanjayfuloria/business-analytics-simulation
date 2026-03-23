@@ -9,30 +9,33 @@ let webRLoading = false;
 
 // ===== PYODIDE (Python) =====
 
-async function loadPyodide() {
+async function initPyodideRuntime() {
     if (pyodideInstance) return pyodideInstance;
     if (pyodideLoading) {
         // Wait for existing load to complete
         while (pyodideLoading) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
         }
         return pyodideInstance;
     }
 
     pyodideLoading = true;
-    showLoading('Loading Python runtime (Pyodide)... This may take a moment on first use.');
+    showLoading('Loading Python runtime (Pyodide)... This may take 15–30 seconds on first use.');
 
     try {
-        // Load Pyodide script
-        if (!window.loadPyodide) {
+        // Load Pyodide CDN script if not already loaded
+        if (typeof window._pyodideLoadPackage === 'undefined' && !document.querySelector('script[src*="pyodide"]')) {
             await loadScript('https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js');
         }
+
+        // Now window.loadPyodide is the REAL Pyodide factory from the CDN
         pyodideInstance = await window.loadPyodide({
             indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
         });
 
         // Pre-load common packages
-        await pyodideInstance.loadPackage(['numpy']);
+        showLoading('Installing numpy & scipy... Almost ready.');
+        await pyodideInstance.loadPackage(['numpy', 'scipy']);
 
         hideLoading();
         pyodideLoading = false;
@@ -45,12 +48,11 @@ async function loadPyodide() {
 }
 
 async function runPython(code) {
-    const pyodide = await loadPyodide();
+    const pyodide = await initPyodideRuntime();
 
-    // Capture stdout
+    // Redirect stdout/stderr to capture output
     pyodide.runPython(`
-import sys
-import io
+import sys, io
 sys.stdout = io.StringIO()
 sys.stderr = io.StringIO()
     `);
@@ -59,30 +61,32 @@ sys.stderr = io.StringIO()
         await pyodide.runPythonAsync(code);
         const stdout = pyodide.runPython('sys.stdout.getvalue()');
         const stderr = pyodide.runPython('sys.stderr.getvalue()');
-        return { output: stdout + (stderr ? '\n[stderr] ' + stderr : ''), error: false };
+        let output = stdout;
+        if (stderr && stderr.trim()) output += '\n[stderr] ' + stderr;
+        return { output: output || '(Code executed successfully — no print output)', error: false };
     } catch (err) {
-        const stderr = pyodide.runPython('sys.stderr.getvalue()');
+        let stderr = '';
+        try { stderr = pyodide.runPython('sys.stderr.getvalue()'); } catch(e) {}
         return { output: err.message + (stderr ? '\n' + stderr : ''), error: true };
     }
 }
 
 // ===== webR (R) =====
 
-async function loadWebR() {
+async function initWebRRuntime() {
     if (webRInstance) return webRInstance;
     if (webRLoading) {
         while (webRLoading) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
         }
         return webRInstance;
     }
 
     webRLoading = true;
-    showLoading('Loading R runtime (webR)... This may take a moment on first use.');
+    showLoading('Loading R runtime (webR)... This may take 15–30 seconds on first use.');
 
     try {
         if (!window.WebR) {
-            // Load webR module
             const module = await import('https://webr.r-wasm.org/latest/webr.mjs');
             window.WebR = module.WebR;
         }
@@ -102,13 +106,12 @@ async function loadWebR() {
 
 async function runR(code) {
     try {
-        const webR = await loadWebR();
+        const webR = await initWebRRuntime();
 
         // Use shelter for memory management
         const shelter = await new webR.Shelter();
 
         try {
-            // Capture output
             const result = await shelter.captureR(code, {
                 withAutoprint: true,
                 captureStreams: true,
@@ -128,7 +131,7 @@ async function runR(code) {
                 : '';
 
             shelter.purge();
-            return { output: output + (errors ? '\n' + errors : ''), error: false };
+            return { output: output + (errors ? '\n' + errors : '') || '(Code executed successfully — no output)', error: false };
         } catch (err) {
             shelter.purge();
             return { output: err.message, error: true };
@@ -142,10 +145,12 @@ async function runR(code) {
 
 function loadScript(src) {
     return new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[src="${src}"]`);
+        if (existing) { resolve(); return; }
         const script = document.createElement('script');
         script.src = src;
         script.onload = resolve;
-        script.onerror = reject;
+        script.onerror = () => reject(new Error('Failed to load script: ' + src));
         document.head.appendChild(script);
     });
 }
@@ -173,9 +178,11 @@ async function runCodeBlock(blockId) {
     if (!wrapper) return;
 
     const activePanel = wrapper.querySelector('.code-panel.active');
+    if (!activePanel) return;
     const lang = activePanel.getAttribute('data-lang');
     const code = activePanel.querySelector('code').textContent;
     const outputEl = document.getElementById(blockId + '-output');
+    if (!outputEl) return;
 
     outputEl.textContent = 'Running...';
     outputEl.className = 'output-block visible';
@@ -247,12 +254,10 @@ function switchCodeTab(blockId, lang) {
     const wrapper = document.getElementById(blockId);
     if (!wrapper) return;
 
-    // Switch tab buttons
     wrapper.querySelectorAll('.code-lang-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+        btn.classList.toggle('active', btn.textContent.toLowerCase().trim() === lang);
     });
 
-    // Switch code panels
     wrapper.querySelectorAll('.code-panel').forEach(panel => {
         panel.classList.toggle('active', panel.getAttribute('data-lang') === lang);
     });
